@@ -9,6 +9,8 @@ public class Node : MonoBehaviour
     public int army = 0;
     public int maxArmy = 100;
 
+    public int owner = 0;
+    
     public TextMeshPro counter;
 
     private Animation _clickAnimation;
@@ -17,12 +19,13 @@ public class Node : MonoBehaviour
         InvokeRepeating(nameof(Increment), 1, 1);
 
         _clickAnimation = GetComponent<Animation>();
+
+        GetComponentInChildren<SpriteRenderer>().color = ColorScheme.GetColor(owner);
     }
     
     private void Update()
     {
         counter.text = army.ToString();
-        // int currentValue = Int32.Parse(text.text);
     }
 
     private void Increment()
@@ -45,6 +48,15 @@ public class Node : MonoBehaviour
         _clickAnimation.Rewind();
         _clickAnimation.Sample();
         _clickAnimation.Stop();
+    }
 
+    public void AddArmy(int amount)
+    {
+        army += amount;
+    }
+
+    public void RemoveArmy(int amount)
+    {
+        army -= amount;
     }
 }

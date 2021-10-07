@@ -26,22 +26,66 @@ public class Player : MonoBehaviour
     private void Update()
     {
         var clickLocation = TouchManager.Instance.GetClickLocation();
-        var clicked = TouchManager.Instance.GetClickedObject(clickLocation);
+        var clickedNode = TouchManager.Instance.GetClickedNode(clickLocation);
         
         // Debug.Log("Update");
-        if (clicked is { })
+
+        if (clickLocation is { })
         {
-            // Debug.Log("clicking");
-            _focus?.Unclick();
-            _focus = clicked.GetComponent<Node>();
-            _focus.Click();
+            
+            if (clickedNode != null && _focus is null)
+            {
+                // You clicked something, nothing is in focus
+                // Clicked object enters focus
+                _focus = clickedNode;
+                _focus.Click();
+            } 
+            else if (clickedNode == null && _focus != null)
+            {
+                // You clicked empty space, something is in focus
+                // Remove focus
+                _focus.Unclick();
+                _focus = null;
+            } 
+            else if (clickedNode != null && _focus != null)
+            {
+                // You clicked something, something is in focus
+                // Fun begins
+                ProcessAttack(_focus, clickedNode);
+                _focus = null;
+            }
+            else if (clickedNode == null && _focus is null)
+            {
+                // Chill, nothing to do
+            }
+            
         }
-        else if (clickLocation is { } && _focus is { })
-        {
-            // Debug.Log("Unclicking");
-            _focus.Unclick();
-            _focus = null;
-        }
+
+        
+        // else if (clickLocation is { } && _focus is { })
+        // {
+        //     // Debug.Log("Unclicking");
+        //     _focus.Unclick();
+        //     _focus = null;
+        // }
     }
-    
+
+    private void ProcessAttack(Node source, Node target)
+    {
+        if (source == target)
+        {
+            Debug.Log("Clicking the same guy");
+            source.Unclick();
+            source.Click();
+            return;
+        }
+        
+        // Start an army animation?
+
+        Debug.Log("Clicking someone else");
+        source.Unclick();
+        
+        source.RemoveArmy(5);
+        target.RemoveArmy(10);
+    }
 }
